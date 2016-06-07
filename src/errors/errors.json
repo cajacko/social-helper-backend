@@ -1,0 +1,12 @@
+{
+    "1": {
+        "title": "Result was an invalid format",
+        "group": "Could not get tracking queries",
+        "message": "Result was an invalid format."
+    },
+    "0": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    }
+}
