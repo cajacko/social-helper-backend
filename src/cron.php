@@ -9,6 +9,9 @@ require_once('src/models/database.php');
 require_once('src/logs/log.php');
 require_once('src/errors/error.php');
 require_once('src/helpers/validations/includes.php');
+require_once('src/helpers/tracking-query.php');
+require_once('src/helpers/get-tracking-queries.php');
+require_once('src/helpers/get-objects-by-tracking-query.php');
 require_once('src/actions/save-new-objects.php');
 
 // Setup vars, config and database

@@ -2,11 +2,7 @@
 
 function is_error($error)
 {
-    if (!isset($error['error'])) {
-        return false;
-    }
-
-    if (!$error['error']) {
+    if (!is_a($error, 'SocialHelper\Error\Error')) {
         return false;
     }
 

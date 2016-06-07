@@ -1,4 +1,14 @@
 {
+    "3": {
+        "title": "Results were not objects",
+        "group": "Could not get objects by tracking query",
+        "message": "Results were not objects."
+    },
+    "2": {
+        "title": "Result was an invalid format",
+        "group": "Could not get objects by tracking query",
+        "message": "Result was an invalid format."
+    },
     "1": {
         "title": "Result was an invalid format",
         "group": "Could not get tracking queries",

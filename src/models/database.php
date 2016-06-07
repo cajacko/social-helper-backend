@@ -27,7 +27,7 @@ class Database
     {
         $query = '
             SELECT *
-            FROM trackingQueries
+            FROM trackingQueriesView
         ;';
 
         $stmt = $this->conn->prepare($query);

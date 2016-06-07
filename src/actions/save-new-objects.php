@@ -6,7 +6,7 @@ function save_new_objects()
     
     $log = new SocialHelper\Logs\Log(1);
 
-    $tracking_queries = $db->getTrackingQueries();
+    $tracking_queries = get_tracking_queries();
 
     if (is_error($tracking_queries)) {
         $log->error($tracking_queries);
@@ -24,9 +24,7 @@ function save_new_objects()
     // If there are tracking queries then process them
     if ($tracking_queries) {
         foreach ($tracking_queries as $tracking_query) {
-            $tracking_query = new TrackingQuery($tracking_query);
-
-            $objects = $db->getObjectsByTrackingQuery($tracking_query);
+            $objects = get_objects_by_tracking_query($tracking_query);
 
             if (is_error($objects)) {
                 $log->error($objects);
@@ -34,7 +32,7 @@ function save_new_objects()
             }
 
             if (!is_objects($objects)) {
-                $error = new SocialHelper\Error\Error(0);
+                $error = new SocialHelper\Error\Error(3);
                 $log->error($error);
                 break;
             }
