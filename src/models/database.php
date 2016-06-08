@@ -47,4 +47,9 @@ class Database
 
         return $tracking_queries;
     }
+
+    public function getTrackingQueryAccounts($tracking_query_ID = null)
+    {
+        return array(array('key' => 'doliuhgfoihfpo', 'secret' => 'sohguifroihtrj'));
+    }
 }
