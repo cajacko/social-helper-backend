@@ -24,5 +24,9 @@ function is_twitter_app_connection($connection)
 
 function is_twitter_connection($connection)
 {
+    if (!is_a($connection, 'Abraham\TwitterOAuth\TwitterOAuth')) {
+        return false;
+    }
 
+    return true;
 }

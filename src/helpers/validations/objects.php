@@ -2,6 +2,10 @@
 
 function is_objects($objects)
 {
+    if (!is_array($objects)) {
+        return false;
+    }
+
     if (!isset($objects[0])) {
         return false;
     }
@@ -11,7 +15,7 @@ function is_objects($objects)
 
 function is_an_object($object)
 {
-    if (!is_a($object, 'SocialHelper\Object\Object')) {
+    if (!is_a($object, 'SocialHelper\Object\SocialObject')) {
         return false;
     }
 

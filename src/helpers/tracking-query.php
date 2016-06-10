@@ -6,14 +6,22 @@ class TrackingQuery
 {
     private $type;
     private $query;
+    private $ID;
 
     public function __construct($tracking_query = null)
     {
-        if ($tracking_query && is_array($tracking_query)) {
-            $this->setType($tracking_query);
-            $this->setQuery($tracking_query);
+        $this->setType($tracking_query);
+        $this->setQuery($tracking_query);
+        $this->setID($tracking_query);
+    }
+
+    private function setID($tracking_query)
+    {
+        if (isset($tracking_query['ID'])) {
+            $this->ID = $tracking_query['ID'];
+        } else {
+            $this->ID = null;
         }
-        
     }
 
     private function setType($tracking_query)
@@ -32,6 +40,11 @@ class TrackingQuery
         } else {
             $this->query = null;
         }
+    }
+
+    public function getID()
+    {
+        return $this->ID;
     }
 
     public function getType()

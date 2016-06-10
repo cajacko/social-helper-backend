@@ -1,4 +1,174 @@
 {
+    "37": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "36": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "35": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "34": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "33": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "32": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "31": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "30": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "29": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "28": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "27": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "26": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "25": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "24": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "23": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "22": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "21": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "20": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "19": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "18": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "17": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "16": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "15": {
+        "title": "Verifying the connection failed",
+        "group": "Twitter connection failed",
+        "message": "Verifying the connection failed"
+    },
+    "14": {
+        "title": "Verifying a user connection failed",
+        "group": "Twitter connection failed",
+        "message": "Verifying a user connection failed."
+    },
+    "13": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "12": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "11": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "10": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "9": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "8": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "7": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "6": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "5": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "4": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
     "3": {
         "title": "Results were not objects",
         "group": "Could not get objects by tracking query",

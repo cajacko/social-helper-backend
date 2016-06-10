@@ -7,7 +7,7 @@ function get_objects_by_tracking_query($tracking_query)
     }
 
     $type = $tracking_query->getType();
-    $query = $tracking_query->getQuery();
+    // $query = $tracking_query->getQuery();
 
     if (is_error($type)) {
         return $type;
@@ -18,29 +18,20 @@ function get_objects_by_tracking_query($tracking_query)
         return $error;
     }
 
-    if (is_error($query)) {
-        return $query;
-    }
-
-    if (!$query) {
-        $error = new SocialHelper\Error\Error();
-        return $error;
-    }
-
     switch ($type) {
         case 'twitter':
-            return get_twitter_objects_by_query($query);
+            return get_twitter_objects_by_query($tracking_query);
         default:
             $error = new SocialHelper\Error\Error();
             return $error;
     }
 }
 
-function get_twitter_objects_by_query($query)
+function get_twitter_objects_by_query($tracking_query)
 {
     global $twitter_connections;
 
-    $twitter_connection = get_twitter_connection_for_query($query);
+    $twitter_connection = get_twitter_connection_for_query($tracking_query);
 
     if (is_error($twitter_connection)) {
         return $twitter_connection;
@@ -51,5 +42,5 @@ function get_twitter_objects_by_query($query)
         return $error;
     }
 
-    return $twitter_connection->getObjectsByQuery($query);
+    return $twitter_connection->getObjectsByQuery($tracking_query);
 }

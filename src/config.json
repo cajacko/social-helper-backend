@@ -4,5 +4,9 @@
         "user": "root",
         "password": "root",
         "database": "socialhelper"
+    },
+    "twitter": {
+        "key": "nGRzPOVLbtlSHJJUNCiwrMvjb",
+        "secret": "3dC2cbT1zVkTOUPfC0o9kj8ATF8nPMKKjZ4UTEhgixpeoguwt6"
     }
 }

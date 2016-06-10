@@ -1,8 +1,8 @@
 <?php
 
-function get_twitter_connection_for_query($tracking_query_ID)
+function get_twitter_connection_for_query($tracking_query)
 {
-    $accounts = get_tracking_query_accounts($tracking_query_ID);
+    $accounts = get_tracking_query_accounts($tracking_query);
 
     if (is_error($accounts)) {
         return $accounts;
@@ -14,42 +14,43 @@ function get_twitter_connection_for_query($tracking_query_ID)
     }
 
     if (!isset($accounts[0])) {
-        $error = new SocialHelper\Error\Error();
+        $error = new SocialHelper\Error\Error(4);
         return $error;
     }
 
     $account = $accounts[0];
 
     if (!is_account($account)) {
-        $error = new SocialHelper\Error\Error();
+        $error = new SocialHelper\Error\Error(5);
         return $error;
     }
 
-    $account_twitter_connection_details = $account->getTwitterConnectionDetails();
+    $response = $account->connectToTwitter();
 
-    if (is_error($account_twitter_connection_details)) {
-        return $account_twitter_connection_details;
+    if (is_error($response)) {
+        return $response;
     }
 
-    if (!isset($account_twitter_connection_details['key'])) {
-        $error = new SocialHelper\Error\Error();
-        return $error;
-    }
-
-    if (!isset($account_twitter_connection_details['secret'])) {
-        $error = new SocialHelper\Error\Error();
-        return $error;
-    }
-
-    $twitter_connection = new SocialHelper\Twitter\Twitter($account_twitter_connection_details);
+    $twitter_connection = $account->twitterConnection;
 
     if (is_error($twitter_connection)) {
         return $twitter_connection;
     }
 
-    if (!is_twitter_connection($twitter_connection)) {
-        $error = new SocialHelper\Error\Error();
+    if (!is_twitter_class($twitter_connection)) {
+        $error = new SocialHelper\Error\Error(8);
         return $error;
+    }
+
+    $response = $twitter_connection->verifySuccessfulConnection();
+
+    if (!$response) {
+        $error = new SocialHelper\Error\Error(15);
+        return $error;
+    }
+
+    if (is_error($response)) {
+        return $response;
     }
 
     return $twitter_connection;
