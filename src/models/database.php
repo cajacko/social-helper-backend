@@ -15,7 +15,9 @@ class Database
             $this->config->database->host,
             $this->config->database->user,
             $this->config->database->password,
-            $this->config->database->database
+            $this->config->database->database,
+            $this->config->database->port,
+            $this->config->database->socket
         );
         
         $db->set_charset('utf8mb4');
@@ -34,7 +36,7 @@ class Database
         $stmt->execute();
         $res = $stmt->get_result();
 
-        if (!$res->num_rows) {
+        if ($res->num_rows === 0) {
             return false;
         }
 

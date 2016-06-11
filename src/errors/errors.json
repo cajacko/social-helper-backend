@@ -1,4 +1,14 @@
 {
+    "39": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
+    "38": {
+        "title": "Database result was not an array",
+        "group": "Could not get tracking queries",
+        "message": "Maybe there are no results?."
+    },
     "37": {
         "title": "Undefined error",
         "group": "Undefined error",

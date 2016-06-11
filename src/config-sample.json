@@ -1,0 +1,15 @@
+{
+    "database": {
+        "host": "localhost",
+        "user": "root",
+        "password": "root",
+        "database": "socialhelper",
+        "port": 3306,
+        "socket": "/Applications/MAMP/tmp/mysql/mysql.sock"
+    },
+    "twitter": {
+        "key": "xxx",
+        "secret": "xxx",
+        "offline": false
+    }
+}

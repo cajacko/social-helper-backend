@@ -156,14 +156,25 @@ class SocialObject
                 return $error;
             }
 
-            $query = "INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)";
-            $query .= "VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."');";
+            $query = "SELECT * FROM objectTrackingQuery WHERE objectID = @objectID AND trackingQueryID = " . $tracking_query_id . ";";
             $response = $this->db->query($query);
 
-            if (!$response) {
+            if (!isset($response->num_rows)) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(36);
+                $error = new \SocialHelper\Error\Error(39);
                 return $error;
+            }
+
+            if ($response->num_rows === 0) {
+                $query = "INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)";
+                $query .= "VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."');";
+                $response = $this->db->query($query);
+
+                if (!$response) {
+                    $this->db->rollback();
+                    $error = new \SocialHelper\Error\Error(36);
+                    return $error;
+                }
             }
         }
 

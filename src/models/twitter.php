@@ -20,18 +20,24 @@ class Twitter
 
     public function getObjectsByQuery($tracking_query)
     {
-        $query = $tracking_query->getQuery();
-        $query = parse_twitter_query($query);
+        if ($this->config->twitter->offline) {
+            $tweet_response = file_get_contents('offline-data/tweets.json', true);
+            $tweet_response = json_decode($tweet_response);
+        } else {
+            $query = $tracking_query->getQuery();
+            $query = parse_twitter_query($query);
 
-        $twitter_search_array = array(
-            'q' => $query['query'],
-            "count" => 100,
-            'exclude_replies' => true,
-            'lang' => 'en',
-            'result_type' => 'recent',
-        );
+            $twitter_search_array = array(
+                'q' => $query['query'],
+                "count" => 100,
+                'exclude_replies' => true,
+                'lang' => 'en',
+                'result_type' => 'recent',
+            );
 
-        $tweet_response = $this->connection->get("search/tweets", $twitter_search_array);
+            $tweet_response = $this->connection->get("search/tweets", $twitter_search_array);
+        }
+
         $objects = get_twitter_objects_by_reponse($tweet_response);
 
         return $objects;
@@ -63,6 +69,10 @@ class Twitter
 
     public function verifyUserCredentials()
     {
+        if ($this->config->twitter->offline) {
+            return true;
+        }
+
         if (null === $this->connection_type) {
             return false;
         }
@@ -82,6 +92,11 @@ class Twitter
 
     public function setupUserConnection($token, $secret)
     {
+        if ($this->config->twitter->offline) {
+            $this->connection_type = 'user';
+            return true;
+        }
+
         try {
             $this->connection = new \Abraham\TwitterOAuth\TwitterOAuth($this->consumer_key, $this->consumer_secret, $token, $secret);
         } catch (Exception $e) {
