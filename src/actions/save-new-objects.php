@@ -39,53 +39,68 @@ function save_new_objects()
 
             if ($objects) {
                 foreach ($objects as $object) {
-                    $object_id = $object->getID();
+                    // $object_id = $object->getID();
 
-                    if (is_error($object_id)) {
-                        $log->error($object_id);
+                    // if (is_error($object_id)) {
+                    //     $log->error($object_id);
+                    //     break;
+                    // }
+
+                    // if (!$object_id && !is_numeric($object_id)) {
+                    $response = $object->saveNew();
+
+                    if (is_error($response)) {
+                        $log->error($response);
                         break;
                     }
 
-                    if (!$object_id && !is_numeric($object_id)) {
-                        $response = $object->saveNew();
-
-                        if (is_error($response)) {
-                            $log->error($response);
-                            break;
-                        }
-
-                        if (!$response) {
-                            $error = new SocialHelper\Error\Error(20);
-                            $log->error($error);
-                            break;
-                        }
-
-                        $response = $object->saveMeta();
-
-                        if (is_error($response)) {
-                            $log->error($response);
-                            break;
-                        }
-
-                        if (!$response) {
-                            $error = new SocialHelper\Error\Error(21);
-                            $log->error($error);
-                            break;
-                        }
-                    } else {
-                        $response = $object->saveExisting();
-
-                        if (is_error($response)) {
-                            $log->error($response);
-                            break;
-                        }
-
-                        if (!$response) {
-                            $error = new SocialHelper\Error\Error(23);
-                            $log->error($error);
-                            break;
-                        }
+                    if (!$response) {
+                        $error = new SocialHelper\Error\Error(20);
+                        $log->error($error);
+                        break;
                     }
+
+                    // $response = $object->saveMeta();
+
+                    // if (is_error($response)) {
+                    //     $log->error($response);
+                    //     break;
+                    // }
+
+                    // if (!$response) {
+                    //     $error = new SocialHelper\Error\Error(21);
+                    //     $log->error($error);
+                    //     break;
+                    // }
+                    // } else {
+                    //     $response = $object->saveExisting();
+
+                    //     if (is_error($response)) {
+                    //         $log->error($response);
+                    //         break;
+                    //     }
+
+                    //     if (!$response) {
+                    //         $error = new SocialHelper\Error\Error(23);
+                    //         $log->error($error);
+                    //         break;
+                    //     }
+                    // }
+
+                    // TODO: Temp
+                    $response = $object->saveKeywords();
+
+                    if (is_error($response)) {
+                        $log->error($response);
+                        break;
+                    }
+
+                    if (!$response) {
+                        $error = new SocialHelper\Error\Error(21);
+                        $log->error($error);
+                        break;
+                    }
+                    // TODO: End temp
 
                     $response = $object->addTrackingQuery($tracking_query);
 

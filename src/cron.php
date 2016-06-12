@@ -2,7 +2,7 @@
 
 set_include_path(__DIR__ . '/..');
 error_reporting(E_ALL | E_STRICT);
-// mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 date_default_timezone_set('Europe/London');
 
 // Get includes

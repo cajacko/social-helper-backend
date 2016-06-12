@@ -13,6 +13,7 @@ class SocialObject
     private $save_fields;
     private $ID;
     private $tracking_query;
+    private $keywords;
 
     public function __construct($config, $db)
     {
@@ -22,6 +23,7 @@ class SocialObject
         $this->meta = null;
         $this->type = null;
         $this->data = null;
+        $this->keywords = null;
         $this->ID = null;
         $this->tracking_query = null;
         $this->insert_update = null;
@@ -81,9 +83,21 @@ class SocialObject
         return true;
     }
 
-    public function saveMeta()
+    public function saveKeywords()
     {
-        // $this->save_fields[] = 'meta';
+        $this->keywords = array();
+
+        if (isset($this->data->entities->hashtags)) {
+            foreach($this->data->entities->hashtags as $hashtag) {
+                if (isset($hashtag->text)) {
+                    $hashtag = $hashtag->text;
+                    $hashtag = strtolower($hashtag);
+                    $this->keywords[] = array('tweetHashtag' => $hashtag);
+                }
+            }
+        }
+
+        $this->save_fields[] = 'keywords';
         // TODO: Actually parse the meta
         return true;
     }
@@ -106,42 +120,93 @@ class SocialObject
         $date = date('Y-m-d H:i:s');
 
         if (in_array('insert', $save_fields)) {
-            $query = "SELECT @objectTypeID := objectTypesID FROM objectTypes WHERE type = '" . $this->type . "';";
+            $query = "
+                INSERT INTO objectTypes (type, dateAdded, dateUpdated) VALUES ('" . $this->type . "', '" . $date . "', '" . $date ."')
+                ON DUPLICATE KEY UPDATE objectTypesID = LAST_INSERT_ID(objectTypesID);
+            ";
+
             $response = $this->db->query($query);
 
             if (!$response) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(31);
+                $error = new \SocialHelper\Error\Error(40);
                 return $error;
             }
 
-            $query = "INSERT INTO objects (UID, objectTypeID, dateAdded, dateUpdated)";
-            $query .= "VALUES('" . $this->UID . "', @objectTypeID, '" . $date . "', '" . $date ."');";
+            $query = "
+                SET @objectTypeID = LAST_INSERT_ID();
+            ";
+
             $response = $this->db->query($query);
 
             if (!$response) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(32);
+                $error = new \SocialHelper\Error\Error(40);
                 return $error;
             }
 
-            $query = "SET @objectID = LAST_INSERT_ID();";
+
+            // $query = "SELECT @objectTypeID := objectTypesID FROM objectTypes WHERE type = '" . $this->type . "';";
+            // $response = $this->db->query($query);
+
+            // if (!$response) {
+            //     $this->db->rollback();
+            //     $error = new \SocialHelper\Error\Error(31);
+            //     return $error;
+            // }
+
+            $query = "
+                INSERT INTO objects (UID, objectTypeID, dateAdded, dateUpdated) VALUES('" . $this->UID . "', @objectTypeID, '" . $date . "', '" . $date ."')
+                ON DUPLICATE KEY UPDATE objectID = LAST_INSERT_ID(objectID);
+            ";
+
             $response = $this->db->query($query);
 
             if (!$response) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(33);
+                $error = new \SocialHelper\Error\Error(40);
                 return $error;
             }
-        } elseif (in_array('update', $save_fields) && is_numeric($this->ID)) {
-            $query = "SET @objectID = " . $this->ID .";";
+
+            $query = "
+                SET @objectID = LAST_INSERT_ID();
+            ";
+
             $response = $this->db->query($query);
 
             if (!$response) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(34);
+                $error = new \SocialHelper\Error\Error(40);
                 return $error;
             }
+
+            // $query = "INSERT INTO objects (UID, objectTypeID, dateAdded, dateUpdated)";
+            // $query .= "VALUES('" . $this->UID . "', @objectTypeID, '" . $date . "', '" . $date ."');";
+            // $response = $this->db->query($query);
+
+            // if (!$response) {
+            //     $this->db->rollback();
+            //     $error = new \SocialHelper\Error\Error(32);
+            //     return $error;
+            // }
+
+            // $query = "SET @objectID = LAST_INSERT_ID();";
+            // $response = $this->db->query($query);
+
+            // if (!$response) {
+            //     $this->db->rollback();
+            //     $error = new \SocialHelper\Error\Error(33);
+            //     return $error;
+            // }
+        // } elseif (in_array('update', $save_fields) && is_numeric($this->ID)) {
+        //     $query = "SET @objectID = " . $this->ID .";";
+        //     $response = $this->db->query($query);
+
+        //     if (!$response) {
+        //         $this->db->rollback();
+        //         $error = new \SocialHelper\Error\Error(34);
+        //         return $error;
+        //     }
         } else {
             $error = new \SocialHelper\Error\Error(35);
             return $error;
@@ -156,26 +221,111 @@ class SocialObject
                 return $error;
             }
 
-            $query = "SELECT * FROM objectTrackingQuery WHERE objectID = @objectID AND trackingQueryID = " . $tracking_query_id . ";";
+            $query = "
+                INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)
+                VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."')
+                ON DUPLICATE KEY UPDATE objectAccountTrackingQueryID = objectAccountTrackingQueryID;
+            ";
+
             $response = $this->db->query($query);
 
-            if (!isset($response->num_rows)) {
+            if (!$response) {
                 $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(39);
+                $error = new \SocialHelper\Error\Error(36);
                 return $error;
             }
 
-            if ($response->num_rows === 0) {
-                $query = "INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)";
-                $query .= "VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."');";
-                $response = $this->db->query($query);
+            // $query = "SELECT * FROM objectTrackingQuery WHERE objectID = @objectID AND trackingQueryID = " . $tracking_query_id . ";";
+            // $response = $this->db->query($query);
 
-                if (!$response) {
-                    $this->db->rollback();
-                    $error = new \SocialHelper\Error\Error(36);
-                    return $error;
+            // if (!isset($response->num_rows)) {
+            //     $this->db->rollback();
+            //     $error = new \SocialHelper\Error\Error(39);
+            //     return $error;
+            // }
+
+            // if ($response->num_rows === 0) {
+            //     $query = "INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)";
+            //     $query .= "VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."');";
+            //     $response = $this->db->query($query);
+
+            //     if (!$response) {
+            //         $this->db->rollback();
+            //         $error = new \SocialHelper\Error\Error(36);
+            //         return $error;
+            //     }
+            // }
+        }
+
+        if (in_array('keywords', $save_fields)) {
+            if (null !== $this->keywords) {
+                foreach($this->keywords as $array) {
+                    foreach($array as $type => $keyword) {
+                        $query = "
+                            INSERT INTO keywordTypes (type, dateAdded, dateUpdated) VALUES ('" . $type . "', '" . $date . "', '" . $date ."')
+                            ON DUPLICATE KEY UPDATE keywordTypesID = LAST_INSERT_ID(keywordTypesID);
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+
+                        $query = "
+                            SET @keywordTypesID = LAST_INSERT_ID();
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+
+                        $query = "
+                            INSERT INTO keywords (keywordTypeID, keyword, dateAdded, dateUpdated) VALUES (@keywordTypesID, '" . $keyword . "', '" . $date . "', '" . $date ."')
+                            ON DUPLICATE KEY UPDATE keywordID = LAST_INSERT_ID(keywordID);
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+
+                        $query = "
+                            SET @keywordID = LAST_INSERT_ID();
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+
+                        $query = "
+                            INSERT INTO objectKeywords (objectID, keywordID, dateAdded, dateUpdated) VALUES (@objectID, @keywordID, '" . $date . "', '" . $date ."')
+                            ON DUPLICATE KEY UPDATE objectKeywordID = objectKeywordID;
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+                    }
                 }
-            }
+            } 
         }
 
         $this->db->commit();

@@ -127,4 +127,46 @@ class Database
     {
         return $this->conn->query($query);
     }
+
+    public function getKeywordType($type)
+    {
+        $query = '
+            SELECT keywordTypesID as ID
+            FROM keywordTypes
+            WHERE type = ?
+        ;';
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $type);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows === 0) {
+            return false;
+        }
+
+        if ($res->num_rows > 1) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
+        $object = $res->fetch_assoc();
+
+        if (!is_array($object)) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
+        if (!isset($object['ID'])) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
+        if (!is_numeric($object['ID'])) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+        
+        return $object['ID'];
+    }
 }

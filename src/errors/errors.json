@@ -1,4 +1,9 @@
 {
+    "40": {
+        "title": "Undefined error",
+        "group": "Undefined error",
+        "message": "Something went wrong but we don't know what? Ah shit."
+    },
     "39": {
         "title": "Undefined error",
         "group": "Undefined error",
