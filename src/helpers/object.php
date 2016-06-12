@@ -64,11 +64,132 @@ class SocialObject
         $this->UID = $tweet->id;
         $this->data = $tweet;
         $this->type = 'tweet';
+
+        return true;
     }
 
-    private function saveMeta()
+    public function defineTwitterUser($user)
     {
+        if (!isset($user->id)) {
+            return false;
+        }
 
+        $this->UID = $user->id;
+        $this->data = $user;
+        $this->type = 'twitterUser';
+        return true;
+    }
+
+    private function saveReferences()
+    {
+        if (isset($this->data->user)) {
+            $reference = new SocialObject($this->config, $this->db);
+            $response = $reference->defineTwitterUser($this->data->user);
+
+            if (!$response) {
+                $error = new \SocialHelper\Error\Error(41);
+                return $error;
+            }
+
+            if (is_error($response)) {
+                return $response;
+            }
+
+            $reference = save_object($reference);
+
+            if (!$reference) {
+                $error = new \SocialHelper\Error\Error(42);
+                return $error;
+            }
+
+            if (is_error($reference)) {
+                return $reference;
+            }
+
+            $response = $this->saveReference($reference, 'twitterUser'); 
+
+            if (!$response) {
+                $error = new \SocialHelper\Error\Error(43);
+                return $error;
+            }
+
+            if (is_error($response)) {
+                return $response;
+            }
+        }
+
+        return true;
+    }
+
+    private function saveReference($reference, $reference_type)
+    {
+        $this->db->startTransaction();
+        $date = date('Y-m-d H:i:s');
+
+        $query = "
+            INSERT INTO referenceTypes (type, dateAdded, dateUpdated) VALUES ('" . $reference_type . "', '" . $date . "', '" . $date ."')
+            ON DUPLICATE KEY UPDATE referenceTypeID = LAST_INSERT_ID(referenceTypeID), dateUpdated = '" . $date . "';
+        ";
+
+        $response = $this->db->query($query);
+
+        if (!$response) {
+            $this->db->rollback();
+            $error = new \SocialHelper\Error\Error(49);
+            return $error;
+        }
+
+        $query = "SET @referenceTypeID = LAST_INSERT_ID();";
+
+        $response = $this->db->query($query);
+
+        if (!$response) {
+            $this->db->rollback();
+            $error = new \SocialHelper\Error\Error(44);
+            return $error;
+        }
+
+        $objectID = $this->getID();
+
+        if (!$objectID) {
+            $this->db->rollback();
+            $error = new \SocialHelper\Error\Error(45);
+            return $error;
+        }
+
+        if (is_error($objectID)) {
+            $this->db->rollback();
+            return $objectID;
+        }
+
+        $referenceID = $reference->getID();
+
+        if (!$referenceID) {
+            $this->db->rollback();
+            $error = new \SocialHelper\Error\Error(46);
+            return $error;
+        }
+
+        if (is_error($referenceID)) {
+            $this->db->rollback();
+            return $referenceID;
+        }
+
+        $query = "
+            INSERT INTO objectReferences (objectID, referenceID, referenceType, dateAdded, dateUpdated) VALUES (" . $objectID . ", " . $referenceID . ", @referenceTypeID, '" . $date . "', '" . $date ."')
+            ON DUPLICATE KEY UPDATE objectReferenceID = LAST_INSERT_ID(objectReferenceID), dateUpdated = '" . $date . "';
+        ";
+
+        $response = $this->db->query($query);
+
+        if (!$response) {
+            $this->db->rollback();
+            $error = new \SocialHelper\Error\Error(47);
+            return $error;
+        }
+
+        $this->db->commit();
+        return true;
     }
 
     public function saveKeywords()
@@ -104,7 +225,7 @@ class SocialObject
         if (null === $this->ID) {
             $query = "
                 INSERT INTO objectTypes (type, dateAdded, dateUpdated) VALUES ('" . $this->type . "', '" . $date . "', '" . $date ."')
-                ON DUPLICATE KEY UPDATE objectTypesID = LAST_INSERT_ID(objectTypesID);
+                ON DUPLICATE KEY UPDATE objectTypesID = LAST_INSERT_ID(objectTypesID), dateUpdated = '" . $date . "';
             ";
 
             $response = $this->db->query($query);
@@ -129,7 +250,7 @@ class SocialObject
 
             $query = "
                 INSERT INTO objects (UID, objectTypeID, dateAdded, dateUpdated) VALUES('" . $this->UID . "', @objectTypeID, '" . $date . "', '" . $date ."')
-                ON DUPLICATE KEY UPDATE objectID = LAST_INSERT_ID(objectID);
+                ON DUPLICATE KEY UPDATE objectID = LAST_INSERT_ID(objectID), dateUpdated = '" . $date . "';
             ";
 
             $response = $this->db->query($query);
@@ -163,7 +284,7 @@ class SocialObject
             }
         } else {
             $this->db->rollback();
-            $error = new \SocialHelper\Error\Error();
+            $error = new \SocialHelper\Error\Error(48);
             return $error;
         }
 
@@ -179,7 +300,7 @@ class SocialObject
             $query = "
                 INSERT INTO objectTrackingQuery (objectID, trackingQueryID, dateAdded, dateUpdated)
                 VALUES(@objectID, " . $tracking_query_id . ", '" . $date . "', '" . $date ."')
-                ON DUPLICATE KEY UPDATE objectAccountTrackingQueryID = objectAccountTrackingQueryID;
+                ON DUPLICATE KEY UPDATE objectAccountTrackingQueryID = objectAccountTrackingQueryID, dateUpdated = '" . $date . "';
             ";
 
             $response = $this->db->query($query);
@@ -197,7 +318,7 @@ class SocialObject
                     foreach($array as $type => $keyword) {
                         $query = "
                             INSERT INTO keywordTypes (type, dateAdded, dateUpdated) VALUES ('" . $type . "', '" . $date . "', '" . $date ."')
-                            ON DUPLICATE KEY UPDATE keywordTypesID = LAST_INSERT_ID(keywordTypesID);
+                            ON DUPLICATE KEY UPDATE keywordTypesID = LAST_INSERT_ID(keywordTypesID), dateUpdated = '" . $date . "';
                         ";
 
                         $response = $this->db->query($query);
@@ -222,7 +343,7 @@ class SocialObject
 
                         $query = "
                             INSERT INTO keywords (keywordTypeID, keyword, dateAdded, dateUpdated) VALUES (@keywordTypesID, '" . $keyword . "', '" . $date . "', '" . $date ."')
-                            ON DUPLICATE KEY UPDATE keywordID = LAST_INSERT_ID(keywordID);
+                            ON DUPLICATE KEY UPDATE keywordID = LAST_INSERT_ID(keywordID), dateUpdated = '" . $date . "';
                         ";
 
                         $response = $this->db->query($query);
@@ -247,7 +368,7 @@ class SocialObject
 
                         $query = "
                             INSERT INTO objectKeywords (objectID, keywordID, dateAdded, dateUpdated) VALUES (@objectID, @keywordID, '" . $date . "', '" . $date ."')
-                            ON DUPLICATE KEY UPDATE objectKeywordID = objectKeywordID;
+                            ON DUPLICATE KEY UPDATE objectKeywordID = objectKeywordID, dateUpdated = '" . $date . "';
                         ";
 
                         $response = $this->db->query($query);
@@ -263,6 +384,17 @@ class SocialObject
         }
 
         $this->db->commit();
+        $response = $this->saveReferences();
+
+        if (!$response) {
+            $error = new \SocialHelper\Error\Error(50);
+            return $error;
+        }
+
+        if (is_error($response)) {
+            return $response;
+        }
+
         return true;
     }
 
