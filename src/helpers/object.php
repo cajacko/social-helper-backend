@@ -153,6 +153,7 @@ class SocialObject
 
         if (!$objectID) {
             $this->db->rollback();
+            print_r($this);
             $error = new \SocialHelper\Error\Error(45);
             return $error;
         }
@@ -192,11 +193,29 @@ class SocialObject
         return true;
     }
 
+    public function saveMeta()
+    {
+        $this->meta = array();
+
+        if ($this->type == 'tweet' && isset($this->data->entities->urls)) {
+            foreach($this->data->entities->urls as $url) {
+
+                if (isset($url->expanded_url)) {
+                    $url = $url->expanded_url;
+                    $this->meta[] = array('tweetUrl' => $url);
+                }
+            }
+        }
+
+        $this->save_fields[] = 'meta';
+        return true;
+    }
+
     public function saveKeywords()
     {
         $this->keywords = array();
 
-        if (isset($this->data->entities->hashtags)) {
+        if ($this->type == 'tweet' && isset($this->data->entities->hashtags)) {
             foreach($this->data->entities->hashtags as $hashtag) {
                 if (isset($hashtag->text)) {
                     $hashtag = $hashtag->text;
@@ -369,6 +388,27 @@ class SocialObject
                         $query = "
                             INSERT INTO objectKeywords (objectID, keywordID, dateAdded, dateUpdated) VALUES (@objectID, @keywordID, '" . $date . "', '" . $date ."')
                             ON DUPLICATE KEY UPDATE objectKeywordID = objectKeywordID, dateUpdated = '" . $date . "';
+                        ";
+
+                        $response = $this->db->query($query);
+
+                        if (!$response) {
+                            $this->db->rollback();
+                            $error = new \SocialHelper\Error\Error(40);
+                            return $error;
+                        }
+                    }
+                }
+            } 
+        }
+
+        if (in_array('meta', $save_fields)) {
+            if (null !== $this->meta) {
+                foreach($this->meta as $array) {
+                    foreach($array as $meta_key => $meta_value) {
+                        $query = "
+                            INSERT INTO objectMeta (metaKey, metaValue, objectID, dateAdded, dateUpdated) VALUES ('" . $meta_key . "', '" . $meta_value . "', @objectID, '" . $date . "', '" . $date ."')
+                            ON DUPLICATE KEY UPDATE dateUpdated = '" . $date . "';
                         ";
 
                         $response = $this->db->query($query);
