@@ -80,6 +80,18 @@ class SocialObject
         return true;
     }
 
+    public function defineLink($link)
+    {
+        $this->data = new \SocialHelper\Link\Link();
+        $response = $this->data->setSourceUrl($link);
+        $url = $this->data->resolveUrl();
+
+        $this->UID = $url;
+        $this->type = 'link';
+
+        return true;
+    }
+
     private function saveReferences()
     {
         if (isset($this->data->user)) {
@@ -118,6 +130,51 @@ class SocialObject
             }
         }
 
+        if (!is_array($this->meta)) {
+            return true;
+        }
+
+        foreach($this->meta as $meta) {
+            foreach($meta as $key => $value) {
+                if ('tweetUrl' == $key) {
+                    $object = new SocialObject($this->config, $this->db);
+
+                    $response = $reference->defineLink($value);
+
+                    if (!$response) {
+                        $error = new \SocialHelper\Error\Error();
+                        return $error;
+                    }
+
+                    if (is_error($response)) {
+                        return $response;
+                    }
+
+                    $reference = save_object($reference);
+
+                    if (!$reference) {
+                        $error = new \SocialHelper\Error\Error();
+                        return $error;
+                    }
+
+                    if (is_error($reference)) {
+                        return $reference;
+                    }
+
+                    $response = $this->saveReference($reference, 'twitterUrl'); 
+
+                    if (!$response) {
+                        $error = new \SocialHelper\Error\Error();
+                        return $error;
+                    }
+
+                    if (is_error($response)) {
+                        return $response;
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
@@ -153,7 +210,6 @@ class SocialObject
 
         if (!$objectID) {
             $this->db->rollback();
-            print_r($this);
             $error = new \SocialHelper\Error\Error(45);
             return $error;
         }
@@ -166,6 +222,11 @@ class SocialObject
         $referenceID = $reference->getID();
 
         if (!$referenceID) {
+            var_dump($reference->UID);
+            var_dump($reference->type);
+            var_dump($referenceID);
+            // print_r($reference);
+            exit;
             $this->db->rollback();
             $error = new \SocialHelper\Error\Error(46);
             return $error;
@@ -241,7 +302,7 @@ class SocialObject
         $this->db->startTransaction();
         $date = date('Y-m-d H:i:s');
 
-        if (null === $this->ID) {
+        // if (null === $this->ID) {
             $query = "
                 INSERT INTO objectTypes (type, dateAdded, dateUpdated) VALUES ('" . $this->type . "', '" . $date . "', '" . $date ."')
                 ON DUPLICATE KEY UPDATE objectTypesID = LAST_INSERT_ID(objectTypesID), dateUpdated = '" . $date . "';
@@ -291,21 +352,21 @@ class SocialObject
                 $error = new \SocialHelper\Error\Error(40);
                 return $error;
             }
-        } elseif (is_numeric($this->ID)) {
-            $query = "SET @objectID = " . $this->ID .";";
+        // } elseif (is_numeric($this->ID)) {
+        //     $query = "SET @objectID = " . $this->ID .";";
 
-            $response = $this->db->query($query);
+        //     $response = $this->db->query($query);
 
-            if (!$response) {
-                $this->db->rollback();
-                $error = new \SocialHelper\Error\Error(40);
-                return $error;
-            }
-        } else {
-            $this->db->rollback();
-            $error = new \SocialHelper\Error\Error(48);
-            return $error;
-        }
+        //     if (!$response) {
+        //         $this->db->rollback();
+        //         $error = new \SocialHelper\Error\Error(40);
+        //         return $error;
+        //     }
+        // } else {
+        //     $this->db->rollback();
+        //     $error = new \SocialHelper\Error\Error(48);
+        //     return $error;
+        // }
 
         if (in_array('trackingQuery', $save_fields)) {
             $tracking_query_id = $this->tracking_query->getID();
@@ -435,6 +496,25 @@ class SocialObject
             return $response;
         }
 
+        $response = $this->getMetaObjects();
+
+        if (is_error($response)) {
+            return $response;
+        }
+
+        if ($response) {
+            $response = $this->saveMetaObjects();
+
+            if (!$response) {
+                $error = new \SocialHelper\Error\Error();
+                return $error;
+            }
+
+            if (is_error($response)) {
+                return $response;
+            }
+        }   
+
         return true;
     }
 
@@ -442,6 +522,18 @@ class SocialObject
     {
         $this->save_fields[] = 'trackingQuery';
         $this->tracking_query = $tracking_query;
+        return true;
+    }
+
+    public function getMetaObjects()
+    {
+
+
+        return true;
+    }
+
+    public function saveMetaObjects()
+    {
         return true;
     }
 }

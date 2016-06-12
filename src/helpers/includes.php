@@ -8,6 +8,7 @@ require_once('src/helpers/get-objects-by-tracking-query.php');
 require_once('src/helpers/account.php');
 require_once('src/helpers/keyword.php');
 require_once('src/helpers/object.php');
+require_once('src/helpers/link.php');
 require_once('src/helpers/save-object.php');
 require_once('src/helpers/get-tracking-query-accounts.php');
 require_once('src/helpers/twitter-queries.php');
