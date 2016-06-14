@@ -64,7 +64,7 @@ class Account
 
     private function getMeta()
     {
-        $meta = $this->db->getAccountMeta();
+        $meta = $this->db->getAccountMeta($this->account_id);
 
         if (!$meta) {
             return false;

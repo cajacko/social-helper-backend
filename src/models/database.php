@@ -54,11 +54,42 @@ class Database
         return array(array('id' => 12));
     }
 
-    public function getAccountMeta()
+    public function getAccountMeta($account_ID)
     {
+        $query = '
+            SELECT *
+            FROM accountMeta
+            WHERE accountID = ?
+        ;';
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $account_ID);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows === 0) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
+        while ($meta = $res->fetch_assoc()) {
+            if (isset($meta['metaKey']) && 'twitterToken' == $meta['metaKey']) {
+                $twitterToken = $meta['metaValue'];
+            }
+
+            if (isset($meta['metaKey']) && 'twitterSecret' == $meta['metaKey']) {
+                $twitterSecret = $meta['metaValue'];
+            }
+        }
+
+        if (!isset($twitterToken) || !isset($twitterSecret)) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
         return array(
-            'twitterToken' => 'xxx',
-            'twitterSecret' => 'xxx'
+            'twitterToken' => $twitterToken,
+            'twitterSecret' => $twitterSecret
         );
     }
 

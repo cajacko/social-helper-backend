@@ -5,7 +5,7 @@
         "password": "root",
         "database": "socialhelper",
         "port": 3306,
-        "socket": "/Applications/MAMP/tmp/mysql/mysql.sock"
+        "socket": null
     },
     "twitter": {
         "key": "xxx",
