@@ -11,7 +11,6 @@ function is_tracking_queries($tracking_queries)
     }
 
     return is_tracking_query($tracking_queries[0]);
-    
 }
 
 function is_tracking_query($tracking_query)

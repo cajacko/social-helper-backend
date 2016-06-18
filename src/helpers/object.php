@@ -14,6 +14,8 @@ class SocialObject
     private $ID;
     private $tracking_query;
     private $keywords;
+    private $action;
+    private $account;
 
     public function __construct($config, $db)
     {
@@ -24,7 +26,9 @@ class SocialObject
         $this->type = null;
         $this->data = null;
         $this->keywords = null;
+        $this->account = null;
         $this->ID = null;
+        $this->action = null;
         $this->tracking_query = null;
         $this->insert_update = null;
         $this->save_fields = array();
@@ -92,6 +96,31 @@ class SocialObject
         return true;
     }
 
+    public function addAccountAction($account)
+    {
+        if (!is_account($account)) {
+            $error = new \SocialHelper\Error\Error();
+            return $error;
+        }
+
+        $this->account = $account;
+
+        switch ($this->type) {
+            case 'tweet':
+                $this->action = 'tweet';
+                break;
+            case 'link':
+                $this->action = 'tweet';
+                break;
+            default:
+                return false;
+        }
+
+        $this->save_fields[] = 'accountAction';       
+
+        return true;
+    }
+
     private function saveReferences()
     {
         if (isset($this->data->user)) {
@@ -150,7 +179,13 @@ class SocialObject
                         return $response;
                     }
 
-                    $reference = save_object($reference);
+                    if (null !== $this->account) {
+                        $type = $this->account;
+                    } else {
+                        $type = null;
+                    }
+
+                    $reference = save_object($reference, $type);
 
                     if (!$reference) {
                         $error = new \SocialHelper\Error\Error();
@@ -480,6 +515,61 @@ class SocialObject
                             return $error;
                         }
                     }
+                }
+            } 
+        }
+
+        if (in_array('accountAction', $save_fields)) {
+            if (null !== $this->account || null !== $this->action) {
+                $query = "
+                    INSERT INTO actions (type, dateAdded, dateUpdated) VALUES ('" . $this->action . "', '" . $date . "', '" . $date ."')
+                    ON DUPLICATE KEY UPDATE actionsID = LAST_INSERT_ID(actionsID), dateUpdated = '" . $date . "';
+                ";
+
+                $response = $this->db->query($query);
+
+                if (!$response) {
+                    $this->db->rollback();
+                    $error = new \SocialHelper\Error\Error();
+                    return $error;
+                }
+
+                $query = "
+                    SET @actionsID = LAST_INSERT_ID();
+                ";
+
+                $response = $this->db->query($query);
+
+                if (!$response) {
+                    $this->db->rollback();
+                    $error = new \SocialHelper\Error\Error();
+                    return $error;
+                }
+
+                $account_id = $this->account->getID();
+
+                if (is_error($account_id)) {
+                    $this->db->rollback();
+                    return $account_id;
+                }
+
+                if (!$account_id) {
+                    $this->db->rollback();
+                    $error = new \SocialHelper\Error\Error();
+                    return $error;
+                }
+
+                $query = "
+                    INSERT INTO objectAccountActions (objectID, accountID, actionID, dateAdded, dateUpdated) VALUES (@objectID, " . $account_id . ", @actionsID, '" . $date . "', '" . $date ."')
+                    ON DUPLICATE KEY UPDATE objectAccountActionsID = LAST_INSERT_ID(objectAccountActionsID), dateUpdated = '" . $date . "';
+                ";
+
+                $response = $this->db->query($query);
+
+                if (!$response) {
+                    $this->db->rollback();
+                    $error = new \SocialHelper\Error\Error();
+                    return $error;
                 }
             } 
         }

@@ -9,14 +9,56 @@ class Account
     public $twitterConnection;
     private $config;
     private $account_id;
+    private $UID;
+    private $type;
 
-    public function __construct($db = null, $config = null, $id = null)
+    public function __construct($db = null, $config = null, $id = null, $type = null, $UID = null)
     {
         $this->config = $config;
         $this->meta = null;
         $this->twitterConnection = null;
         $this->account_id = $id;
         $this->db = $db;
+        $this->setType($type);
+    }
+
+    private function setUID($UID = null)
+    {
+        if (null == $UID) {
+            // Get from db
+            $this->UID = $UID;
+        } else {
+            $this->UID = $UID;
+        }
+    }
+
+    private function setType($type = null)
+    {
+        if (null == $type) {
+            // Get from db
+            $this->type = $type;
+        } else {
+            $this->type = $type;
+        }
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function getUID()
+    {
+        return $this->UID;
+    }
+
+    public function getID()
+    {
+        if (null == $this->account_id) {
+            // TODO: get accountID
+        }
+
+        return $this->account_id;
     }
 
     public function connectToTwitter()

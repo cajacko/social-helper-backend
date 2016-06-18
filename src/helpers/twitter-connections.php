@@ -20,6 +20,11 @@ function get_twitter_connection_for_query($tracking_query)
 
     $account = $accounts[0];
 
+    return get_twitter_connection_for_account($account);
+}
+
+function get_twitter_connection_for_account($account)
+{
     if (!is_account($account)) {
         $error = new SocialHelper\Error\Error(5);
         return $error;

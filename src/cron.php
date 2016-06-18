@@ -14,6 +14,8 @@ require_once('src/logs/log.php');
 require_once('src/errors/error.php');
 require_once('src/helpers/includes.php');
 require_once('src/actions/save-new-objects.php');
+require_once('src/actions/get-ratings.php');
+require_once('src/actions/get-account-objects.php');
 
 // Setup vars, config and database
 $config = new SocialHelper\Config\Config();
@@ -24,4 +26,6 @@ $twitter_app_connection = new SocialHelper\Twitter\Twitter($config);
 $twitter_connections = array('app' => $twitter_app_connection);
 
 // Run actions
-save_new_objects();
+// save_new_objects();
+// get_ratings();
+get_account_objects();

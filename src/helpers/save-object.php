@@ -1,6 +1,6 @@
 <?php
 
-function save_object($object, $tracking_query = false)
+function save_object($object, $type = false)
 {
     $response = $object->saveKeywords();
 
@@ -24,8 +24,8 @@ function save_object($object, $tracking_query = false)
         return $error;
     }
 
-    if ($tracking_query) {
-        $response = $object->addTrackingQuery($tracking_query);
+    if (is_tracking_query($type)) {
+        $response = $object->addTrackingQuery($type);
 
         if (is_error($response)) {
             return $response;
@@ -33,6 +33,19 @@ function save_object($object, $tracking_query = false)
 
         if (!$response) {
             $error = new SocialHelper\Error\Error(24);
+            return $error;
+        }
+    }
+
+    if (is_account($type)) {
+        $response = $object->addAccountAction($type);
+
+        if (is_error($response)) {
+            return $response;
+        }
+
+        if (!$response) {
+            $error = new SocialHelper\Error\Error();
             return $error;
         }
     }

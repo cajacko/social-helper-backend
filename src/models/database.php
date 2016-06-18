@@ -49,6 +49,33 @@ class Database
         return $tracking_queries;
     }
 
+    public function getAccounts()
+    {
+        $query = '
+            SELECT accounts.*, accountTypes.type
+            FROM accounts
+            INNER JOIN accountTypes
+            ON accountTypes.accountTypeID = accounts.accountTypeID
+        ;';
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows === 0) {
+            return false;
+        }
+
+        $accounts = array();
+
+        while ($account = $res->fetch_assoc()) {
+            $accounts[] = $account;
+        }
+
+        return $accounts;
+    }
+
+
     public function getTrackingQueryAccounts($tracking_query_ID = null)
     {
         return array(array('id' => 12));

@@ -43,6 +43,29 @@ class Twitter
         return $objects;
     }
 
+    public function getObjectsByAccount($account)
+    {
+        if ($this->config->twitter->offline) {
+            $tweet_response = file_get_contents('offline-data/user-tweets.json', true);
+            $tweet_response = json_decode($tweet_response);
+        } else {
+            $user_id = $account->getUID();
+
+            $twitter_search_array = array(
+                'user_id' => $user_id,
+                "count" => 200,
+                'exclude_replies' => true,
+                'lang' => 'en',
+            );
+
+            $tweet_response = $this->connection->get("statuses/user_timeline", $twitter_search_array);
+        }
+
+        $objects = get_twitter_objects_by_reponse($tweet_response);
+
+        return $objects;
+    }
+
     public function setupAppConnection()
     {
         try {
@@ -110,7 +133,7 @@ class Twitter
             $error = new \SocialHelper\Error\Error(14);
             return $error;
         }
-        
+    
         return true;
     }
 

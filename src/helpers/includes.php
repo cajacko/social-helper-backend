@@ -12,3 +12,5 @@ require_once('src/helpers/link.php');
 require_once('src/helpers/save-object.php');
 require_once('src/helpers/get-tracking-query-accounts.php');
 require_once('src/helpers/twitter-queries.php');
+require_once('src/helpers/get-accounts.php');
+require_once('get-account-objects-by-account.php');
