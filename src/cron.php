@@ -26,6 +26,6 @@ $twitter_app_connection = new SocialHelper\Twitter\Twitter($config);
 $twitter_connections = array('app' => $twitter_app_connection);
 
 // Run actions
-// save_new_objects();
+save_new_objects();
 // get_ratings();
-get_account_objects();
+// get_account_objects();
